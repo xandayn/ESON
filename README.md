@@ -2,6 +2,7 @@
 ### An Easy Java JSON parser
 
 The goal of ESON is to be a simple and easy to use JSON parser. Nothing more, nothing less.
+ESON requires Java 8 and also uses a language level of 8.
 
 ##Example:
 

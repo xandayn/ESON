@@ -6,8 +6,6 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,11 +23,22 @@ public class JSONEntry {
         _JS_ENGINE = new ScriptEngineManager().getEngineByName("nashorn");
     }
 
-    public static JSONEntry parseJSON(String filePath) throws IOException, ScriptException {
-        String jsonData = new String(Files.readAllBytes(Paths.get(filePath)));
-        String evalString = String.format("JSON.parse('%s');", jsonData.replace("\n", "").replace("\r", "").replace("\t", ""));
-        Object jsonObject = _JS_ENGINE.eval(evalString);
-        return new JSONEntry(jsonObject);
+    public static JSONEntry parseJSON(String fileOrData, boolean file) {
+        try {
+            String jsonData = file ? new String(Files.readAllBytes(Paths.get(fileOrData))) : fileOrData;
+            String evalString = String.format("JSON.parse('%s');", jsonData.replace("\n", "").replace("\r", "").replace("\t", ""));
+            Object jsonObject = _JS_ENGINE.eval(evalString);
+            return new JSONEntry(jsonObject);
+        } catch (Exception e) {
+            if(file) {
+                System.err.println("Unable to parse JSON file: " + fileOrData);
+                e.printStackTrace();
+            } else {
+                System.err.println("Unable to parse JSON data: " + fileOrData);
+                e.printStackTrace();
+            }
+            return new JSONEntry(null);
+        }
     }
     //</editor-fold>
 
